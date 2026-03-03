@@ -77,7 +77,6 @@
 
 
 
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import Home from "./pages/Home";
@@ -85,6 +84,7 @@ import Courses from "./pages/Courses";
 import MyCourses from "./pages/MyCourses";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
+import PaymentPage from "./pages/PaymentPage";
 
 import CourseTests from "./CourseTests/CourseTests";
 import QuizPage from "./PoliceBharti/QuizPage";
@@ -95,8 +95,13 @@ function App() {
     <BrowserRouter>
       <Routes>
 
+        {/* Login */}
         <Route path="/login" element={<Login />} />
 
+        {/* Payment Page (OUTSIDE Layout) */}
+        <Route path="/pay" element={<PaymentPage />} />
+
+        {/* Main Layout */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="courses" element={<Courses />} />
