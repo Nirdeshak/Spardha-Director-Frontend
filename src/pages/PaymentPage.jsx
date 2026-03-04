@@ -8,6 +8,7 @@ export default function PaymentPage() {
   const orderId = searchParams.get("orderId");
   const amount = searchParams.get("amount");
   const courseId = searchParams.get("courseId");
+  const token = searchParams.get("token");
 
   useEffect(() => {
 
@@ -44,7 +45,8 @@ export default function PaymentPage() {
             {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token
               },
               body: JSON.stringify({
                 orderId: response.razorpay_order_id,
