@@ -35,27 +35,49 @@ export default function PaymentPage() {
 
       order_id: orderId,
 
-      handler: function (response) {
+      handler: async function (response) {
 
-        const paymentId = response.razorpay_payment_id;
+        try {
+
+          await fetch(
+            "https://api.spardhadirectorapp.online/api/v1/payment/verify",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+                courseId: courseId
+              })
+            }
+          );
+
+        } catch (e) {
+          console.error("Verify error", e);
+        }
 
         window.location.href =
           "spardhadirector://payment-success?courseId=" +
           courseId +
           "&paymentId=" +
-          paymentId;
+          response.razorpay_payment_id;
+
       },
 
       modal: {
         ondismiss: function () {
           window.location.href =
             "spardhadirector://payment-cancelled";
-        },
+        }
       },
 
       theme: {
-        color: "#2563eb",
-      },
+        color: "#2563eb"
+      }
+
     };
 
     const rzp = new window.Razorpay(options);
@@ -65,15 +87,25 @@ export default function PaymentPage() {
   }, []);
 
   return (
+
     <div style={containerStyle}>
+
       <div style={cardStyle}>
-        <h2 style={{ marginBottom: "10px" }}>Processing Payment...</h2>
+
+        <h2 style={{ marginBottom: "10px" }}>
+          Processing Payment...
+        </h2>
+
         <p style={{ fontSize: "14px", color: "#555" }}>
           Please wait while we open the secure payment gateway.
         </p>
+
       </div>
+
     </div>
+
   );
+
 }
 
 const containerStyle = {
@@ -82,7 +114,7 @@ const containerStyle = {
   justifyContent: "center",
   alignItems: "center",
   backgroundColor: "#f3f4f6",
-  padding: "20px",
+  padding: "20px"
 };
 
 const cardStyle = {
@@ -92,5 +124,5 @@ const cardStyle = {
   padding: "30px",
   borderRadius: "12px",
   boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  textAlign: "center",
+  textAlign: "center"
 };
