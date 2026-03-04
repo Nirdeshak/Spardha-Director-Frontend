@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export default function PaymentPage() {
+
   const [searchParams] = useSearchParams();
 
   const orderId = searchParams.get("orderId");
@@ -9,6 +10,7 @@ export default function PaymentPage() {
   const courseId = searchParams.get("courseId");
 
   useEffect(() => {
+
     if (!orderId || !amount || !courseId) {
       alert("Invalid Payment Request");
       return;
@@ -20,17 +22,28 @@ export default function PaymentPage() {
     }
 
     const options = {
-      key: "rzp_test_SMLRZcjww63oCH", // ✅ Public key only
+
+      key: "rzp_test_SMLRZcjww63oCH",
+
       amount: Number(amount) * 100,
+
       currency: "INR",
+
       name: "Spardha Director",
+
       description: "Course Purchase",
+
       order_id: orderId,
 
-      handler: function () {
-        // Payment success
+      handler: function (response) {
+
+        const paymentId = response.razorpay_payment_id;
+
         window.location.href =
-          "spardhadirector://payment-success?courseId=" + courseId;
+          "spardhadirector://payment-success?courseId=" +
+          courseId +
+          "&paymentId=" +
+          paymentId;
       },
 
       modal: {
@@ -46,7 +59,9 @@ export default function PaymentPage() {
     };
 
     const rzp = new window.Razorpay(options);
+
     rzp.open();
+
   }, []);
 
   return (
