@@ -8,7 +8,6 @@ export default function PaymentPage() {
   const orderId = searchParams.get("orderId");
   const amount = searchParams.get("amount");
   const courseId = searchParams.get("courseId");
-  const token = searchParams.get("token");
 
   useEffect(() => {
 
@@ -40,13 +39,15 @@ export default function PaymentPage() {
 
         try {
 
+          const token = localStorage.getItem("token");
+
           await fetch(
             "https://api.spardhadirectorapp.online/api/v1/payment/verify",
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: "Bearer " + token
+                "Authorization": `Bearer ${token}`
               },
               body: JSON.stringify({
                 orderId: response.razorpay_order_id,
