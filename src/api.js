@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://3.110.131.225:8080/api/v1",
+  baseURL: "https://api.spardhadirectorapp.online/api/v1",
 });
 
 
