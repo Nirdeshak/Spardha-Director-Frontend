@@ -4,12 +4,14 @@ const API = axios.create({
   baseURL: "https://api.spardhadirectorapp.online/api/v1",
 });
 
-
 API.interceptors.request.use((req) => {
-  const token = localStorage.getItem("accessToken");
+
+  const token = localStorage.getItem("token");
+
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
   }
+
   return req;
 });
 
