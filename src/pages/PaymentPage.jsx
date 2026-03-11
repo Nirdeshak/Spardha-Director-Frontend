@@ -158,6 +158,7 @@ export default function PaymentPage() {
   const orderId = searchParams.get("orderId");
   const amount = searchParams.get("amount");
   const courseId = searchParams.get("courseId");
+  const token = searchParams.get("token");
 
   const openApp = (paymentId) => {
 
@@ -169,15 +170,16 @@ export default function PaymentPage() {
 
     window.location.href = deepLink;
 
-    // fallback page (user ने continue केले नाही तर)
+    // fallback button
     setTimeout(() => {
-      document.getElementById("openAppBtn").style.display = "block";
+      const btn = document.getElementById("openAppBtn");
+      if (btn) btn.style.display = "block";
     }, 2500);
   };
 
   useEffect(() => {
 
-    if (!orderId || !amount || !courseId) {
+    if (!orderId || !amount || !courseId || !token) {
       alert("Invalid Payment Request");
       return;
     }
@@ -205,8 +207,6 @@ export default function PaymentPage() {
 
         try {
 
-          const token = localStorage.getItem("token");
-
           await fetch(
             "https://api.spardhadirectorapp.online/api/v1/payment/verify",
             {
@@ -228,7 +228,7 @@ export default function PaymentPage() {
           console.error("Verify error", e);
         }
 
-        // ⭐ app open
+        // open mobile app
         openApp(response.razorpay_payment_id);
 
       },
@@ -272,7 +272,8 @@ export default function PaymentPage() {
           style={btnStyle}
           onClick={() =>
             window.location.href =
-            "spardhadirector://payment-success?courseId=" + courseId
+            "spardhadirector://payment-success?courseId=" +
+            courseId
           }
         >
           Open Spardha Director App
