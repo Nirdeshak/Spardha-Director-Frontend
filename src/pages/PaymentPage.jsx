@@ -170,7 +170,6 @@ export default function PaymentPage() {
 
     window.location.href = deepLink;
 
-    // fallback button
     setTimeout(() => {
       const btn = document.getElementById("openAppBtn");
       if (btn) btn.style.display = "block";
@@ -207,7 +206,7 @@ export default function PaymentPage() {
 
         try {
 
-          await fetch(
+          const verifyRes = await fetch(
             "https://api.spardhadirectorapp.online/api/v1/payment/verify",
             {
               method: "POST",
@@ -224,12 +223,21 @@ export default function PaymentPage() {
             }
           );
 
+          const verifyJson = await verifyRes.json();
+
+          console.log("VERIFY RESPONSE:", verifyJson);
+
+          // verify success झाल्यावरच app open
+          if (verifyJson.status === "SUCCESS") {
+            openApp(response.razorpay_payment_id);
+          } else {
+            alert("Payment verification failed");
+          }
+
         } catch (e) {
           console.error("Verify error", e);
+          alert("Payment verification error");
         }
-
-        // open mobile app
-        openApp(response.razorpay_payment_id);
 
       },
 
@@ -259,12 +267,11 @@ export default function PaymentPage() {
       <div style={cardStyle}>
 
         <h2 style={{ marginBottom: "10px" }}>
-          Payment Successful
+          Processing Payment...
         </h2>
 
         <p style={{ fontSize: "14px", color: "#555" }}>
-          If the app did not open automatically,
-          click the button below.
+          Please wait while we confirm your payment.
         </p>
 
         <button
