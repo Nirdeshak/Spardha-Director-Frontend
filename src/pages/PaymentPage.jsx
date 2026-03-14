@@ -158,21 +158,21 @@ const [searchParams] = useSearchParams();
 const orderId = searchParams.get("orderId");
 const amount = searchParams.get("amount");
 const courseId = searchParams.get("courseId");
-const userId = searchParams.get("userId"); // IMPORTANT
+const userId = searchParams.get("userId");
 
 const openApp = (paymentId) => {
 
 const deepLink =
-  "spardhadirector://payment-success?courseId=" +
-  courseId +
-  "&paymentId=" +
-  paymentId;
+"spardhadirector://payment-success?courseId=" +
+courseId +
+"&paymentId=" +
+paymentId;
 
 window.location.href = deepLink;
 
 setTimeout(() => {
-  const btn = document.getElementById("openAppBtn");
-  if (btn) btn.style.display = "block";
+const btn = document.getElementById("openAppBtn");
+if (btn) btn.style.display = "block";
 }, 2500);
 
 };
@@ -180,97 +180,103 @@ setTimeout(() => {
 useEffect(() => {
 
 if (!orderId || !amount || !courseId || !userId) {
-  alert("Invalid Payment Request");
-  return;
+alert("Invalid Payment Request");
+return;
 }
 
 if (typeof window.Razorpay === "undefined") {
-  alert("Razorpay SDK failed to load");
-  return;
+alert("Razorpay SDK failed to load");
+return;
 }
 
 const options = {
 
-  key: "rzp_test_SMLRZcjww63oCH",
+key: "rzp_test_SMLRZcjww63oCH",
 
-  amount: Number(amount) * 100,
+amount: Number(amount) * 100,
 
-  currency: "INR",
+currency: "INR",
 
-  name: "Spardha Director",
+name: "Spardha Director",
 
-  description: "Course Purchase",
+description: "Course Purchase",
 
-  order_id: orderId,
+order_id: orderId,
 
-  handler: async function (response) {
+handler: async function (response) {
 
-    try {
+console.log("RAZORPAY RESPONSE:", response);
 
-      const verifyRes = await fetch(
-        "https://api.spardhadirectorapp.online/api/v1/payment/verify",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            courseId: courseId,
-            userId: userId
-          })
-        }
-      );
+if (
+!response.razorpay_payment_id ||
+!response.razorpay_order_id ||
+!response.razorpay_signature
+) {
+alert("Payment response invalid");
+return;
+}
 
-      if (!verifyRes.ok) {
+try {
 
-        const text = await verifyRes.text();
+const verifyRes = await fetch(
+"https://api.spardhadirectorapp.online/api/v1/payment/verify",
+{
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+razorpay_order_id: response.razorpay_order_id,
+razorpay_payment_id: response.razorpay_payment_id,
+razorpay_signature: response.razorpay_signature,
+courseId: courseId,
+userId: userId
+})
+}
+);
 
-        console.log("VERIFY ERROR:", text);
+const text = await verifyRes.text();
 
-        alert("Payment verification failed");
+console.log("VERIFY RESPONSE:", text);
 
-        return;
-      }
+if (!verifyRes.ok) {
+alert("Payment verification failed");
+return;
+}
 
-      const verifyJson = await verifyRes.json();
+const verifyJson = JSON.parse(text);
 
-      console.log("VERIFY RESPONSE:", verifyJson);
+if (verifyJson.status === "SUCCESS") {
 
-      if (verifyJson.status === "SUCCESS") {
+openApp(response.razorpay_payment_id);
 
-        openApp(response.razorpay_payment_id);
+} else {
 
-      } else {
+alert("Payment verification failed");
 
-        alert("Payment verification failed");
+}
 
-      }
+} catch (err) {
 
-    } catch (e) {
+console.error("Verify error", err);
+alert("Payment verification error");
 
-      console.error("Verify error", e);
+}
 
-      alert("Payment verification error");
+},
 
-    }
+modal: {
+ondismiss: function () {
 
-  },
+window.location.href =
+"spardhadirector://payment-cancelled";
 
-  modal: {
-    ondismiss: function () {
+}
+},
 
-      window.location.href =
-        "spardhadirector://payment-cancelled";
-
-    }
-  },
-
-  theme: {
-    color: "#2563eb"
-  }
+theme: {
+color: "#2563eb"
+}
 
 };
 
@@ -284,29 +290,29 @@ return (
 
 <div style={containerStyle}>
 
-  <div style={cardStyle}>
+<div style={cardStyle}>
 
-    <h2 style={{ marginBottom: "10px" }}>
-      Processing Payment...
-    </h2>
+<h2 style={{ marginBottom: "10px" }}>
+Processing Payment...
+</h2>
 
-    <p style={{ fontSize: "14px", color: "#555" }}>
-      Please wait while we confirm your payment.
-    </p>
+<p style={{ fontSize: "14px", color: "#555" }}>
+Please wait while we confirm your payment.
+</p>
 
-    <button
-      id="openAppBtn"
-      style={btnStyle}
-      onClick={() =>
-        window.location.href =
-        "spardhadirector://payment-success?courseId=" +
-        courseId
-      }
-    >
-      Open Spardha Director App
-    </button>
+<button
+id="openAppBtn"
+style={btnStyle}
+onClick={() =>
+window.location.href =
+"spardhadirector://payment-success?courseId=" +
+courseId
+}
+>
+Open Spardha Director App
+</button>
 
-  </div>
+</div>
 
 </div>
 
