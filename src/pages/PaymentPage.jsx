@@ -158,6 +158,7 @@ const [searchParams] = useSearchParams();
 const orderId = searchParams.get("orderId");
 const amount = searchParams.get("amount");
 const courseId = searchParams.get("courseId");
+const userId = searchParams.get("userId"); // IMPORTANT
 
 const openApp = (paymentId) => {
 
@@ -178,7 +179,7 @@ setTimeout(() => {
 
 useEffect(() => {
 
-if (!orderId || !amount || !courseId) {
+if (!orderId || !amount || !courseId || !userId) {
   alert("Invalid Payment Request");
   return;
 }
@@ -205,8 +206,6 @@ const options = {
   handler: async function (response) {
 
     try {
-
-      const userId = localStorage.getItem("userId");
 
       const verifyRes = await fetch(
         "https://api.spardhadirectorapp.online/api/v1/payment/verify",
